@@ -2,6 +2,7 @@
 from marshmallow_sqlalchemy import SQLAlchemySchema, auto_field
 from marshmallow import fields, validate, validates, ValidationError, Schema
 from app.models.user import User
+from app.schemas.fields import PointField
 
 class UserSchema(SQLAlchemySchema):
     class Meta:
@@ -14,7 +15,7 @@ class UserSchema(SQLAlchemySchema):
     role = auto_field(required=True, validate=validate.OneOf([ "farmer", "agronomist"]))
     is_approved = auto_field(dump_only=True)
     subscribed_crops = auto_field()
-    location = auto_field()
+    location = PointField()
     created_alerts = fields.Nested('AlertSchema', many=True, dump_only=True)  
 
 class UserRegisterSchema(UserSchema):
@@ -28,7 +29,7 @@ class UserRegisterSchema(UserSchema):
 class UserUpdateSchema(Schema):
     first_name = fields.Str(validate=validate.Length(min=1, max=50))
     last_name = fields.Str(validate=validate.Length(min=1, max=50))
-    location = fields.Str()
+    location = PointField()
     subscribed_crops = fields.List(fields.Str())
 
 

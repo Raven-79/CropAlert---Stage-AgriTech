@@ -1,6 +1,6 @@
 
 from app.extensions import db, bcrypt
-
+from geoalchemy2 import Geography
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -12,7 +12,7 @@ class User(db.Model):
     role = db.Column(db.String(20), nullable=False) # 'agronomist' or 'farmer' or 'admin'
     is_approved = db.Column(db.Boolean, default=False) # For admin users, this can be used to approve or disapprove users
     subscribed_crops = db.Column(db.ARRAY(db.String)) # For farmers: ['wheat', 'corn']
-    location = db.Column(db.String(100), nullable=True) #to be changed to cordinates later
+    location = db.Column(Geography(geometry_type='POINT', srid=4326), nullable=True)
     created_alerts = db.relationship('Alert', backref='creator', lazy=True)
 
     def set_password(self, password):
