@@ -23,6 +23,6 @@ class User(db.Model):
     
     def can_make_alert(self):
         return self.role == 'agronomist' and self.is_approved
-
+    
     def __repr__(self):
         return f'<User {self.username}>'
