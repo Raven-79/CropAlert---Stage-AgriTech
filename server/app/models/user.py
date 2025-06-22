@@ -11,6 +11,9 @@ class User(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     role = db.Column(db.String(20), nullable=False) # 'agronomist' or 'farmer' or 'admin'
     is_approved = db.Column(db.Boolean, default=False) # For admin users, this can be used to approve or disapprove users
+    subscribed_crops = db.Column(db.ARRAY(db.String)) # For farmers: ['wheat', 'corn']
+    location = db.Column(db.String(100), nullable=True) #to be changed to cordinates later
+    created_alerts = db.relationship('Alert', backref='creator', lazy=True)
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

@@ -12,9 +12,12 @@ class Alert(db.Model):
     crop_type = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     expires_at = db.Column(db.DateTime)
-    # agronomist_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # agronomist = db.relationship('User', backref='alerts')
-
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+   
+    def is_expired(self):
+        if self.expires_at:
+            return datetime.utcnow() > self.expires_at
+        return False
     def __repr__(self):
         return f'<Alert {self.title} - {self.severity}>'
     
