@@ -3,6 +3,7 @@ from .config import Config
 from .extensions import db, bcrypt, jwt
 import os
 from dotenv import load_dotenv
+from .routes.auth import auth_bp
 load_dotenv()
 
 
@@ -10,7 +11,7 @@ def create_app():
     print("Creating Flask app with configuration from Config class...")
     app = Flask(__name__)
     app.config.from_object(Config)
-
+    app.register_blueprint(auth_bp)
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
