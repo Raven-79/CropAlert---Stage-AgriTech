@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.schemas.user import UserSchema, UserUpdateSchema, UserPasswordUpdateSchema
 from marshmallow import ValidationError
 
-user_bp = Blueprint('user', __name__, url_prefix='/user')
+user_bp = Blueprint('user', __name__, url_prefix='/api/user')
 
 def get_current_user_or_404():
     identity = get_jwt_identity()

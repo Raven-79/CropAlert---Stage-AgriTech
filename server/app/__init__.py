@@ -16,8 +16,9 @@ load_dotenv()
 def create_app():
     print("Creating Flask app with configuration from Config class...")
     app = Flask(__name__)
-    CORS(app,supports_credentials=True, origins=os.getenv("FRONTEND_URL", "*"), methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],allow_headers=["Content-Type", "Authorization"],)
+    CORS(app,supports_credentials=True, origins="http://localhost:5173", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],)
     app.config.from_object(Config)
+    app.config["JWT_VERIFY_SUB"] = False
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(admin_bp)

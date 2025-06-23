@@ -17,7 +17,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/auth/logout", {
+      const response = await fetch("http:/api//auth/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -52,8 +52,9 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden md:ml-8 md:flex md:space-x-6">
-              <NavLink to="/alerts">My Alerts</NavLink>
+              <NavLink to="/">My Alerts</NavLink>
               <NavLink to="/search">Find Alert</NavLink>
+              <NavLink to="/add-alert">Create Alert</NavLink>
             
             </div>
           </div>
@@ -111,7 +112,7 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
     
-            <MobileNavLink to="/alerts">my Alerts</MobileNavLink>
+            <MobileNavLink to="/">my Alerts</MobileNavLink>
             <MobileNavLink to="/search">Find Alert</MobileNavLink>
             <MobileNavLink to="/profile">Edit Profile</MobileNavLink>
             <MobileNavLink to="/change-password">Change Password</MobileNavLink>

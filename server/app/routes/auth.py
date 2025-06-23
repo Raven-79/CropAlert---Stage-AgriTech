@@ -6,7 +6,7 @@ from datetime import timedelta
 from marshmallow import ValidationError
 from app.schemas.auth import RegisterSchema, LoginSchema
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 register_schema = RegisterSchema()
 login_schema = LoginSchema()
@@ -52,14 +52,20 @@ def login():
     if not user or not user.check_password(data['password']):
         return jsonify({'error': 'Invalid email or password'}), 401
     
-    access_token = create_access_token(identity={'id': user.id, 'role': user.role})
+    access_token = create_access_token(identity={'id': str(user.id), 'role': user.role})
     response = make_response({"message": "Login successful"})
     response.set_cookie(
         "access_token",
         access_token,
-        httponly=True,
-        secure=True,
-        samesite='Strict',
-        max_age=3600
+        # httponly=True,
+        # secure=False,
+        samesite='lax',
+        # max_age=36000
     )
+    return response
+
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    response = make_response({"message": "Logout successful"})
+    response.set_cookie("access_token", "", expires=0)
     return response
