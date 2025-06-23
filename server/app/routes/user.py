@@ -28,7 +28,7 @@ def get_profile():
 
 
 @user_bp.route('/profile/update', methods=['PUT'])
-@jwt_required()
+@jwt_required(locations="cookies")
 def update_profile():
     user = get_current_user_or_404()
 

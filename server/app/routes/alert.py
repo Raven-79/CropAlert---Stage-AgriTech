@@ -9,7 +9,7 @@ from geoalchemy2.shape import to_shape
 from app.routes.user import get_current_user_or_404
 from geoalchemy2.elements import WKTElement
 from marshmallow import ValidationError
-from app.schemas.alert_schema import AlertSchema, CreateAlertSchema, UpdateAlertSchema
+from app.schemas.alert import AlertSchema, CreateAlertSchema, UpdateAlertSchema
 
 alert_bp = Blueprint('alert', __name__, url_prefix='/alert')
 
