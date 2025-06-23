@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, FlaskConical, Tractor } from "lucide-react";
 import clsx from "clsx";
 import type { ResgisterUser } from "@/types/user";
-
+import { useNavigate } from "react-router";
 type RegisterProps = {
   onSwitchToLogin: () => void;
 };
 
-async function registerUser(data: any) {
+async function registerUser(data: {first_name: string; last_name: string; email: string; password: string; role: "farmer" | "agronomist"}) {
   const response = await fetch("http://127.0.0.1:5000/auth/register", {
     method: "POST",
     headers: {
@@ -29,6 +29,7 @@ async function registerUser(data: any) {
 }
 
 export default function Register({ onSwitchToLogin }: RegisterProps) {
+  const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<"farmer" | "agronomist" | null>(null);
   const [resgisterData, setRegisterData] = useState<ResgisterUser>({
     firstName: "",
@@ -50,7 +51,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: () => {
-      // alert("Registration successful!");
+      navigate("/");
       console.log("Registration successful!");
     },
     onError: (error: unknown) => {
@@ -58,8 +59,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
         // alert(error.message || "Registration failed");
         console.error("Registration error:", error.message);
       } else {
-        // alert("Registration failed");
-        console.error("Registration error:", error);
+        alert("Registration failed");
       }
     },
   });
