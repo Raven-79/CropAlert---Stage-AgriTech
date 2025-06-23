@@ -6,17 +6,23 @@ import { ArrowLeft, FlaskConical, Tractor } from "lucide-react";
 import clsx from "clsx";
 import type { ResgisterUser } from "@/types/user";
 import { useNavigate } from "react-router";
+
 type RegisterProps = {
   onSwitchToLogin: () => void;
 };
 
-async function registerUser(data: {first_name: string; last_name: string; email: string; password: string; role: "farmer" | "agronomist"}) {
+async function registerUser(data: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  role: "farmer" | "agronomist";
+}) {
   const response = await fetch("http://127.0.0.1:5000/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -31,7 +37,7 @@ async function registerUser(data: {first_name: string; last_name: string; email:
 export default function Register({ onSwitchToLogin }: RegisterProps) {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<"farmer" | "agronomist" | null>(null);
-  const [resgisterData, setRegisterData] = useState<ResgisterUser>({
+  const [registerData, setRegisterData] = useState<ResgisterUser>({
     firstName: "",
     lastName: "",
     email: "",
@@ -43,23 +49,26 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const [canRegister, setCanRegister] = useState(false);
 
   useEffect(() => {
-    const { firstName, lastName, email, password, confirmPassword } = resgisterData;
-    const valid = firstName && lastName && email && password === confirmPassword && selectedRole;
+    const { firstName, lastName, email, password, confirmPassword } = registerData;
+    const valid = firstName && lastName && email && password && password === confirmPassword && selectedRole;
     setCanRegister(Boolean(valid));
-  }, [resgisterData, selectedRole]);
+  }, [registerData, selectedRole]);
 
   const mutation = useMutation({
     mutationFn: registerUser,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Optionally automatically log the user in after registration
+      if (data.access_token) {
+        localStorage.setItem("jwtToken", data.access_token);
+      }
       navigate("/");
       console.log("Registration successful!");
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
-        // alert(error.message || "Registration failed");
         console.error("Registration error:", error.message);
       } else {
-        alert("Registration failed");
+        console.error("Registration failed");
       }
     },
   });
@@ -82,11 +91,11 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutation.mutate({
-      first_name: resgisterData.firstName,
-      last_name: resgisterData.lastName,
-      email: resgisterData.email,
-      password: resgisterData.password,
-      role: resgisterData.role,
+      first_name: registerData.firstName,
+      last_name: registerData.lastName,
+      email: registerData.email,
+      password: registerData.password,
+      role: registerData.role,
     });
   };
 
@@ -104,14 +113,14 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
             type="text"
             placeholder="First Name"
             required
-            value={resgisterData.firstName}
+            value={registerData.firstName}
             onChange={(e) => handleChange("firstName", e.target.value)}
           />
           <Input
             type="text"
             placeholder="Last Name"
             required
-            value={resgisterData.lastName}
+            value={registerData.lastName}
             onChange={(e) => handleChange("lastName", e.target.value)}
           />
         </div>
@@ -119,21 +128,21 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
           type="email"
           placeholder="Email"
           required
-          value={resgisterData.email}
+          value={registerData.email}
           onChange={(e) => handleChange("email", e.target.value)}
         />
         <Input
           type="password"
           placeholder="Password"
           required
-          value={resgisterData.password}
+          value={registerData.password}
           onChange={(e) => handleChange("password", e.target.value)}
         />
         <Input
           type="password"
           placeholder="Confirm Password"
           required
-          value={resgisterData.confirmPassword}
+          value={registerData.confirmPassword}
           onChange={(e) => handleChange("confirmPassword", e.target.value)}
         />
 
@@ -163,10 +172,20 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
           </Button>
         </div>
 
-        {mutation.isError && <p className="text-red-600 text-sm">{(mutation.error as Error)?.message}</p>}
-        {mutation.isSuccess && <p className="text-green-600 text-sm">Registered successfully!</p>}
+        {mutation.isError && (
+          <p className="text-red-600 text-sm">
+            {(mutation.error as Error)?.message}
+          </p>
+        )}
+        {mutation.isSuccess && (
+          <p className="text-green-600 text-sm">Registered successfully!</p>
+        )}
 
-        <Button className="w-full mt-4" type="submit" disabled={!canRegister || mutation.isPending}>
+        <Button
+          className="w-full mt-4"
+          type="submit"
+          disabled={!canRegister || mutation.isPending}
+        >
           {mutation.isPending ? "Registering..." : "Register"}
         </Button>
       </form>

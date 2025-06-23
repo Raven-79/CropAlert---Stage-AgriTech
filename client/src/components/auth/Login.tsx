@@ -5,18 +5,17 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import type { LoginUser } from "@/types/user";
 import { useNavigate } from "react-router";
+
 type LoginProps = {
   onSwitchToRegister: () => void;
 };
 
 async function loginUser(data: LoginUser) {
-  
   const response = await fetch("http://127.0.0.1:5000/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
     body: JSON.stringify(data),
   });
 
@@ -45,6 +44,10 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
+      // Store the JWT token in localStorage
+      if (data.access_token) {
+        localStorage.setItem("jwtToken", data.access_token);
+      }
       console.log("Login successful!", data);
       navigate("/");
     },

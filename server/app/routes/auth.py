@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify,make_response
+from flask import Blueprint, request, jsonify
 from app.models.user import User
 from app import db
 from flask_jwt_extended import create_access_token
@@ -53,13 +53,17 @@ def login():
         return jsonify({'error': 'Invalid email or password'}), 401
     
     access_token = create_access_token(identity={'id': user.id, 'role': user.role})
-    response = make_response({"message": "Login successful"})
-    response.set_cookie(
-        "access_token",
-        access_token,
-        httponly=True,
-        secure=True,
-        samesite='Strict',
-        max_age=3600
-    )
-    return response
+    
+    # Return the token in the response body and indicate it should be stored in headers
+    return jsonify({
+        'message': 'Login successful',
+        'access_token': access_token,
+        'token_type': 'Bearer',
+        'user_id': user.id,
+        'role': user.role
+    }), 200
+
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    # Invalidate the token by not storing it in the client
+    return jsonify({'message': 'Logout successful'}), 200

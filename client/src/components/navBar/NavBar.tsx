@@ -13,48 +13,50 @@ import { useState } from "react";
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-//   const { toast } = useToast();
+  //   const { toast } = useToast();
 
   const handleLogout = async () => {
     try {
+      // Get the JWT token from storage
+      const token = localStorage.getItem("jwtToken");
+
       const response = await fetch("http://127.0.0.1:5000/auth/logout", {
         method: "POST",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-
+      console.log("Logout response:", response);
       if (!response.ok) throw new Error("Logout failed");
 
-    //   localStorage.removeItem("authState");
+      // Clear the stored token
+      localStorage.removeItem("jwtToken");
+
+      // Optionally clear any other user-related data
+      // localStorage.removeItem('userData');
+
+      // Redirect to login page
       navigate("/auth");
-    //   toast({ title: "Logged out successfully" });
     } catch (error) {
-    //   toast({
-    //     title: "Logout failed",
-    //     variant: "destructive",
-    //   });
-        console.error("Logout error:", error);
+      console.error("Logout error:", error);
+      // Optionally show error to user
+      // alert('Logout failed. Please try again.');
     }
   };
-
   return (
     <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-        
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <img
-                className="h-8 w-auto"
-                src="/CorpAlertLogo.png"
-                alt="Logo"
-              />
+              <img className="h-8 w-auto" src="/CorpAlertLogo.png" alt="Logo" />
               <span className="ml-2 text-xl font-semibold">CorpAlert</span>
             </Link>
 
             <div className="hidden md:ml-8 md:flex md:space-x-6">
               <NavLink to="/alerts">My Alerts</NavLink>
               <NavLink to="/search">Find Alert</NavLink>
-            
             </div>
           </div>
 
@@ -82,7 +84,7 @@ export default function Navbar() {
                     Change Password
                   </Link>
                 </DropdownMenuItem>
-            
+
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
@@ -100,7 +102,11 @@ export default function Navbar() {
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -110,7 +116,6 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
-    
             <MobileNavLink to="/alerts">my Alerts</MobileNavLink>
             <MobileNavLink to="/search">Find Alert</MobileNavLink>
             <MobileNavLink to="/profile">Edit Profile</MobileNavLink>
@@ -141,7 +146,13 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   );
 }
 
-function MobileNavLink({ to, children }: { to: string; children: React.ReactNode }) {
+function MobileNavLink({
+  to,
+  children,
+}: {
+  to: string;
+  children: React.ReactNode;
+}) {
   return (
     <Link
       to={to}
