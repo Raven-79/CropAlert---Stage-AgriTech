@@ -17,7 +17,6 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
             Login
           </Button>
         </form>
-        {/* <div className="text-sm text-gray-600 text-center my-1">Don't have an account?</div> */}
         <div className="w-full max-w-sm mt-2">
           <Button
             variant="outline"

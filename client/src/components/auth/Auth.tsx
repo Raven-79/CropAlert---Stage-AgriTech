@@ -6,7 +6,6 @@ import Register from "./Register";
 
 export default function Auth() {
   const [activeTab, setActiveTab] = useState("login"); 
-  console.log("Active Tab:", activeTab);
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-10 bg-gray-50">
       <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden w-full max-w-5xl">
