@@ -53,7 +53,10 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
           const user = useUserStore.getState().user;
           if (user && user.role === "admin") {
             navigate("/dashboard");
-          } else {
+          } else if (user && user.role === "farmer") {
+            navigate("/farmers-alert");
+          }
+          else {
             navigate("/");
           }
         });

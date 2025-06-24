@@ -42,17 +42,20 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden md:ml-8 md:flex md:space-x-6">
-              {(user?.role === "farmer" || user?.role === "agronomist") && (
+              {user?.role === "agronomist" && (
                 <>
                   <NavLink to="/">My Alerts</NavLink>
+                  <NavLink to="/add-alert">Create Alert</NavLink>
+                </>
+              )}
+              {user?.role === "farmer" && (
+                <NavLink to="/farmers-alert">Farmers Alert</NavLink>
+              )}
+              {(user?.role === "farmer" || user?.role === "agronomist") && (
+                <>
                   <NavLink to="/search">Find Alert</NavLink>
                 </>
               )}
-
-              {user?.role === "agronomist" && (
-                <NavLink to="/add-alert">Create Alert</NavLink>
-              )}
-
               {user?.role === "admin" && (
                 <NavLink to="/dashboard">Dashboard</NavLink>
               )}
@@ -119,16 +122,20 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {/* <MobileNavLink to="/dashboard">Dashboard</MobileNavLink> */}
+            {user?.role === "farmer" && (
+              <MobileNavLink to="/farmers-alert">Farmers Alert</MobileNavLink>
+            )}
+            {user?.role === "agronomist" && (
+              <MobileNavLink to="/">My Alerts</MobileNavLink>
+            )}
             {(user?.role === "farmer" || user?.role === "agronomist") && (
               <>
-                <MobileNavLink to="/">my Alerts</MobileNavLink>
+        
                 <MobileNavLink to="/search">Find Alert</MobileNavLink>
                 <MobileNavLink to="/profile">Edit Profile</MobileNavLink>
                 <MobileNavLink to="/change-password">
                   Change Password
                 </MobileNavLink>
-                <MobileNavLink to="/">My Alerts</MobileNavLink>
-                <MobileNavLink to="/search">Find Alert</MobileNavLink>
               </>
             )}
 

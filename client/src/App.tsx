@@ -14,6 +14,7 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import UpdatePassword from "./components/profile/Password";
 import UpdateProfile from "./components/profile/Profile";
 import CreateAlert from "./components/alerts/addAlert/AddAlert";
+import FarmersAlert from "./components/alerts/addAlert/FarmersAlert";
 
 function App() {
   return (
@@ -39,12 +40,19 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute roles={["farmer","agronomist"]}>
+            <ProtectedRoute roles={["agronomist"]}>
               <Alerts />
             </ProtectedRoute>
           }
         />
-
+         <Route
+          path="/farmers-alert"
+          element={
+            <ProtectedRoute roles={["farmer"]}>
+              <FarmersAlert />
+            </ProtectedRoute>
+          }
+        />
         
         <Route
           path="/search"

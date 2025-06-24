@@ -36,11 +36,6 @@ def create_alert():
         data = create_alert_schema.load(json_data)
     except ValidationError as err:
         return jsonify({'errors': err.messages}), 400
-    # print(f"Received location data: {data['location']}")
-    # longitude = data['location'].lng
-    # latitude = data['location'].lat
-    # print(f"Creating alert at location: {longitude}, {latitude}")
-    
     if not isinstance(data['location'], str) or not data['location'].startswith('POINT('):
         return jsonify({'error': 'Invalid location format. Expected WKT POINT format.'}), 400
 
@@ -190,9 +185,9 @@ def search_alerts():
         return jsonify({'error': 'Location is required for search'}), 400
     if not crop_type:
         return jsonify({'error': 'Crop type is required for search'}), 400
-    if not isinstance(location, list) or len(location) != 2:
-        return jsonify({'error': 'Location must be a list with [longitude, latitude]'}), 400
-    longitude, latitude = location
+    # if not isinstance(location, list) or len(location) != 2:
+    #     return jsonify({'error': 'Location must be a list with [longitude, latitude]'}), 400
+    longitude, latitude = [to_shape(location).x, to_shape(location).y]
     if not (-180 <= longitude <= 180 and -90 <= latitude <= 90):
         return jsonify({'error': 'Invalid coordinates for location'}), 400
     if not isinstance(radius, (int, float)) or radius <= 0:
@@ -220,16 +215,13 @@ def search_alerts():
 @role_required('farmer')
 def get_crop_alerts():
     user = get_current_user_or_404()
-    crop_type = user.crop_type
+    crop_type = user.subscribed_crops
     location = user.location
 
     if not crop_type or not location:
         return jsonify({'error': 'User does not have a crop type or location set'}), 400
 
-    if not isinstance(location, list) or len(location) != 2:
-        return jsonify({'error': 'Location must be a list with [longitude, latitude]'}), 400
-
-    longitude, latitude = location
+    longitude, latitude = [to_shape(location).x, to_shape(location).y]
     if not (-180 <= longitude <= 180 and -90 <= latitude <= 90):
         return jsonify({'error': 'Invalid coordinates for location'}), 400
 
@@ -239,7 +231,7 @@ def get_crop_alerts():
     alerts = Alert.query.filter(
     and_(
         Alert.location.ST_DWithin(location_wkt, radius),
-        Alert.crop_type.in_(user.crop_type)  
+        Alert.crop_type.in_(crop_type)  
     )
     ).all()
 
