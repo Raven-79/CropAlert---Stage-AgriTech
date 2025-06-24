@@ -185,9 +185,7 @@ def search_alerts():
         return jsonify({'error': 'Location is required for search'}), 400
     if not crop_type:
         return jsonify({'error': 'Crop type is required for search'}), 400
-    # if not isinstance(location, list) or len(location) != 2:
-    #     return jsonify({'error': 'Location must be a list with [longitude, latitude]'}), 400
-    longitude, latitude = [to_shape(location).x, to_shape(location).y]
+    longitude, latitude = location
     if not (-180 <= longitude <= 180 and -90 <= latitude <= 90):
         return jsonify({'error': 'Invalid coordinates for location'}), 400
     if not isinstance(radius, (int, float)) or radius <= 0:
