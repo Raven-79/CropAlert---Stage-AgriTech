@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import type { LoginUser } from "@/types/user";
 import { useNavigate } from "react-router";
+import { useUserStore } from "../stores/user";
 type LoginProps = {
   onSwitchToRegister: () => void;
 };
 
 async function loginUser(data: LoginUser) {
-  
   const response = await fetch("http:/api/auth/login", {
     method: "POST",
     headers: {
@@ -46,7 +46,17 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
     mutationFn: loginUser,
     onSuccess: (data) => {
       console.log("Login successful!", data);
-      navigate("/");
+      useUserStore
+        .getState()
+        .fetchProfile()
+        .then(() => {
+          const user = useUserStore.getState().user;
+          if (user && user.role === "admin") {
+            navigate("/dashboard");
+          } else {
+            navigate("/");
+          }
+        });
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
@@ -75,7 +85,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
   return (
     <div className="flex flex-col justify-center items-center p-8 gap-6 w-full md:w-1/2 border-2 rounded-lg md:rounded-none md:border-0 md:border-r border-primary">
       <h2 className="text-2xl font-bold text-primary mb-2">Welcome Back</h2>
-      
+
       <form className="w-full max-w-sm space-y-4" onSubmit={handleSubmit}>
         <Input
           type="email"
@@ -84,7 +94,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
           value={loginData.email}
           onChange={(e) => handleChange("email", e.target.value)}
         />
-        
+
         <Input
           type="password"
           placeholder="Password"
@@ -98,7 +108,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
             {(mutation.error as Error)?.message || "Login failed"}
           </p>
         )}
-        
+
         {mutation.isSuccess && (
           <p className="text-green-600 text-sm">Login successful!</p>
         )}

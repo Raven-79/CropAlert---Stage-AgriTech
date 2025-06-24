@@ -56,3 +56,19 @@ def approve_user(user_id):
     user.is_approved = True
     db.session.commit()
     return jsonify({'message': 'User approved successfully'}), 200
+
+@admin_bp.route('/users/decline/<int:user_id>', methods=['POST'])
+@role_required('admin')
+@jwt_required()
+def decline_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    if user.role != "agronomist":
+        return jsonify({'error': 'Only agronomist users can be declined'}), 400
+    if not user.is_approved:
+        return jsonify({'error': 'User is already declined'}), 400
+    user.is_approved = False
+    db.session.commit()
+    return jsonify({'message': 'User declined successfully'}), 200
+

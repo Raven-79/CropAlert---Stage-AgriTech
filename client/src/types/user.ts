@@ -1,10 +1,10 @@
 export type User = {
   id: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  role: "farmer" | "agronomist";
-  crops?: string[]; // Optional, only for farmers
+  role: "farmer" | "agronomist" | "admin";
+  subscribed_crops?: string[]; // Optional, only for farmers
   created_alerts?: string[]; // Optional, only for agronomists
   location?: {
     latitude: number;

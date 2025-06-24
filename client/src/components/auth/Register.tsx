@@ -10,8 +10,8 @@ type RegisterProps = {
   onSwitchToLogin: () => void;
 };
 
-async function registerUser(data: {first_name: string; last_name: string; email: string; password: string; role: "farmer" | "agronomist"}) {
-  const response = await fetch("http://127.0.0.1:5000/auth/register", {
+async function registerUser(data: {first_name: string; last_name: string; email: string; password: string; role: "farmer" | "agronomist" | "admin"}) {
+  const response = await fetch("http:/api/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,10 +30,10 @@ async function registerUser(data: {first_name: string; last_name: string; email:
 
 export default function Register({ onSwitchToLogin }: RegisterProps) {
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState<"farmer" | "agronomist" | null>(null);
+  const [selectedRole, setSelectedRole] = useState<"farmer" | "agronomist" | "admin" | null>(null);
   const [resgisterData, setRegisterData] = useState<ResgisterUser>({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -43,8 +43,8 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const [canRegister, setCanRegister] = useState(false);
 
   useEffect(() => {
-    const { firstName, lastName, email, password, confirmPassword } = resgisterData;
-    const valid = firstName && lastName && email && password === confirmPassword && selectedRole;
+    const { first_name, last_name, email, password, confirmPassword } = resgisterData;
+    const valid = first_name && last_name && email && password === confirmPassword && selectedRole;
     setCanRegister(Boolean(valid));
   }, [resgisterData, selectedRole]);
 
@@ -56,7 +56,6 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
-        // alert(error.message || "Registration failed");
         console.error("Registration error:", error.message);
       } else {
         alert("Registration failed");
@@ -71,7 +70,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
     }));
   };
 
-  const handleRoleSelect = (role: "farmer" | "agronomist") => {
+  const handleRoleSelect = (role: "farmer" | "agronomist"|"admin") => {
     setSelectedRole(role);
     setRegisterData(prev => ({
       ...prev,
@@ -82,8 +81,8 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutation.mutate({
-      first_name: resgisterData.firstName,
-      last_name: resgisterData.lastName,
+      first_name: resgisterData.first_name,
+      last_name: resgisterData.last_name,
       email: resgisterData.email,
       password: resgisterData.password,
       role: resgisterData.role,
@@ -104,15 +103,15 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
             type="text"
             placeholder="First Name"
             required
-            value={resgisterData.firstName}
-            onChange={(e) => handleChange("firstName", e.target.value)}
+            value={resgisterData.first_name}
+            onChange={(e) => handleChange("first_name", e.target.value)}
           />
           <Input
             type="text"
             placeholder="Last Name"
             required
-            value={resgisterData.lastName}
-            onChange={(e) => handleChange("lastName", e.target.value)}
+            value={resgisterData.last_name}
+            onChange={(e) => handleChange("last_name", e.target.value)}
           />
         </div>
         <Input
