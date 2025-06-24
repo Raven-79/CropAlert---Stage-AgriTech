@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:latest
+    container_name: corpalert-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: corpalert
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - corpalert-pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./server
+    container_name: corpalert-backend
+    volumes:
+      - ./server:/app
+    environment:
+      - FLASK_APP=app
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://user:mysecretpassword@db:5432/corpalert
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./client
+    container_name: corpalert-frontend
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  corpalert-pgdata:
