@@ -11,6 +11,8 @@ from geoalchemy2.elements import WKTElement
 from marshmallow import ValidationError
 from app.schemas.alert import AlertSchema, CreateAlertSchema, UpdateAlertSchema
 from sqlalchemy import and_
+from app.services.notification_service import NotificationService
+
 alert_bp = Blueprint('alert', __name__, url_prefix='/api/alert')
 
 alert_schema = AlertSchema()
@@ -31,11 +33,11 @@ def create_alert():
     if not json_data:
         return jsonify({'error': 'No input data provided'}), 400
 
-
     try:
         data = create_alert_schema.load(json_data)
     except ValidationError as err:
         return jsonify({'errors': err.messages}), 400
+    
     if not isinstance(data['location'], str) or not data['location'].startswith('POINT('):
         return jsonify({'error': 'Invalid location format. Expected WKT POINT format.'}), 400
 
@@ -55,8 +57,14 @@ def create_alert():
     try:
         db.session.add(alert)
         db.session.commit()
+        notification_count = NotificationService.notify_farmers_about_alert(alert)
+        
         result = alert_schema.dump(alert)
-        return jsonify({'message': 'Alert created successfully', 'alert': result}), 201
+        return jsonify({
+            'message': 'Alert created successfully', 
+            'alert': result,
+            'notifications_sent': notification_count
+        }), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Failed to create alert', 'details': str(e)}), 500
@@ -91,12 +99,16 @@ def delete_alert(alert_id):
         return jsonify({'error': 'Unauthorized to delete this alert'}), 403
 
     try:
+        
+        NotificationService.send_alert_update_notification(alert, 'deleted')
+        
         db.session.delete(alert)
         db.session.commit()
         return jsonify({'message': 'Alert deleted successfully'}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Failed to delete alert', 'details': str(e)}), 500
+
 
 
 @alert_bp.route('/<int:alert_id>/update', methods=['PUT'])
