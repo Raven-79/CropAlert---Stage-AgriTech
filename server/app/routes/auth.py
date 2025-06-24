@@ -36,7 +36,17 @@ def register():
     db.session.add(user)
     db.session.commit()
     
-    return jsonify({'message': 'User registered successfully'}), 201
+    access_token = create_access_token(identity={'id': str(user.id), 'role': user.role})
+    response = make_response({"message": "Login successful"})
+    response.set_cookie(
+        "access_token",
+        access_token,
+        # httponly=True,
+        # secure=False,
+        samesite='lax',
+        # max_age=36000
+    )
+    return response
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
