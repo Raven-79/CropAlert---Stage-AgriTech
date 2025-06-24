@@ -105,7 +105,7 @@ export default function UpdatePassword() {
               value={formData.old_password}
               onChange={handleChange}
               required
-              className="bg-secondary-background"
+              className="bg-secondary-background/30"
             />
           </div>
 
@@ -119,7 +119,7 @@ export default function UpdatePassword() {
               onChange={handleChange}
               required
               minLength={8}
-              className="bg-secondary-background"
+              className="bg-secondary-background/30"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default function UpdatePassword() {
               onChange={handleChange}
               required
               minLength={8}
-              className="bg-secondary-background"
+              className="bg-secondary-background/30"
             />
           </div>
 

@@ -30,7 +30,7 @@ def get_profile():
 
 
 @user_bp.route('/profile/update', methods=['PUT'])
-@jwt_required(locations="cookies")
+@jwt_required()
 def update_profile():
     user = get_current_user_or_404()
     if user.role == 'admin':

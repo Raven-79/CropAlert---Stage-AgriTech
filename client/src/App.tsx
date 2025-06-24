@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router";
 import Auth from "./components/auth/Auth";
-import Profile from "./components/profile/Profile";
+
 import Alerts from "./components/alerts/Alerts";
 import Navbar from "./components/navBar/NavBar";
 import FindAlert from "./components/alerts/FindAlert";
@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AdminDashboard from "./components/admin/AdminDashboard";
 
 import UpdatePassword from "./components/profile/Password";
+import UpdateProfile from "./components/profile/Profile";
 
 function App() {
   return (
@@ -58,7 +59,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute roles={["farmer", "agronomist"]}>
-              <Profile />
+              <UpdateProfile />
             </ProtectedRoute>
           }
         />
