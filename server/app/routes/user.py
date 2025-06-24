@@ -19,8 +19,6 @@ def get_current_user_or_404():
 @jwt_required()
 def get_profile():
     user = get_current_user_or_404()
-    if user.role == 'admin':
-        return jsonify({'error': 'Admin profile cannot be accessed'}), 403
     if not user.is_approved:
         return jsonify({'error': 'User is not approved'}), 403
 

@@ -15,7 +15,7 @@ class AlertSchema(Schema):
     alert_type = fields.Str(validate=validate.OneOf(ALERT_TYPES))
     crop_type = fields.Str(required=True)
     created_at = fields.DateTime(dump_only=True)
-    expires_at = fields.DateTime()
+    expires_at = fields.DateTime(format='iso')
     location = PointField(required=True)
     creator_id = fields.Int(dump_only=True)
 

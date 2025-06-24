@@ -6,13 +6,14 @@ import Navbar from "./components/navBar/NavBar";
 import FindAlert from "./components/alerts/FindAlert";
 import { Toaster } from "@/components/ui/sonner";
 import NotFound from "./components/NotFound";
-import AddAlert from "./components/alerts/AddAlert";
+// import AddAlert from "./components/alerts/AddAlert";
 import RedirectIfAuthenticated from "./components/routes/RedirectIfAuthenticated";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AdminDashboard from "./components/admin/AdminDashboard";
 
 import UpdatePassword from "./components/profile/Password";
 import UpdateProfile from "./components/profile/Profile";
+import CreateAlert from "./components/alerts/addAlert/AddAlert";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute roles={["farmer"]}>
+            <ProtectedRoute roles={["farmer","agronomist"]}>
               <Alerts />
             </ProtectedRoute>
           }
@@ -69,7 +70,7 @@ function App() {
           path="/add-alert"
           element={
             <ProtectedRoute roles={["agronomist"]}>
-              <AddAlert />
+              <CreateAlert />
             </ProtectedRoute>
           }
         />

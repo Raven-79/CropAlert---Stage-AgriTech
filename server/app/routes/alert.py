@@ -10,7 +10,7 @@ from app.routes.user import get_current_user_or_404
 from geoalchemy2.elements import WKTElement
 from marshmallow import ValidationError
 from app.schemas.alert import AlertSchema, CreateAlertSchema, UpdateAlertSchema
-
+from sqlalchemy import and_
 alert_bp = Blueprint('alert', __name__, url_prefix='/api/alert')
 
 alert_schema = AlertSchema()
@@ -36,9 +36,15 @@ def create_alert():
         data = create_alert_schema.load(json_data)
     except ValidationError as err:
         return jsonify({'errors': err.messages}), 400
+    # print(f"Received location data: {data['location']}")
+    # longitude = data['location'].lng
+    # latitude = data['location'].lat
+    # print(f"Creating alert at location: {longitude}, {latitude}")
+    
+    if not isinstance(data['location'], str) or not data['location'].startswith('POINT('):
+        return jsonify({'error': 'Invalid location format. Expected WKT POINT format.'}), 400
 
-    longitude, latitude = data['location']
-    location_wkt = WKTElement(f'POINT({longitude} {latitude})', srid=4326)
+    location_wkt = WKTElement(data['location'], srid=4326)
 
     alert = Alert(
         title=data['title'],
@@ -207,3 +213,47 @@ def search_alerts():
     if not result:
         return jsonify({'message': 'No alerts found for the specified criteria'}), 404
     return jsonify(result), 200
+
+
+@alert_bp.route('/crop_alerts', methods=['GET'])
+@jwt_required()
+@role_required('farmer')
+def get_crop_alerts():
+    user = get_current_user_or_404()
+    crop_type = user.crop_type
+    location = user.location
+
+    if not crop_type or not location:
+        return jsonify({'error': 'User does not have a crop type or location set'}), 400
+
+    if not isinstance(location, list) or len(location) != 2:
+        return jsonify({'error': 'Location must be a list with [longitude, latitude]'}), 400
+
+    longitude, latitude = location
+    if not (-180 <= longitude <= 180 and -90 <= latitude <= 90):
+        return jsonify({'error': 'Invalid coordinates for location'}), 400
+
+    location_wkt = WKTElement(f'POINT({longitude} {latitude})', srid=4326)
+    radius = 10000  # meters
+
+    alerts = Alert.query.filter(
+    and_(
+        Alert.location.ST_DWithin(location_wkt, radius),
+        Alert.crop_type.in_(user.crop_type)  
+    )
+    ).all()
+
+    valid_alerts = [alert for alert in alerts if not alert.is_expired()]
+    result = alerts_schema.dump(valid_alerts)
+
+    for idx, alert in enumerate(valid_alerts):
+        result[idx]['location'] = [
+            to_shape(alert.location).x,
+            to_shape(alert.location).y
+        ]
+
+    if not result:
+        return jsonify({'message': 'No alerts found for the specified crop type and location'}), 404
+
+    return jsonify(result), 200
+
