@@ -11,6 +11,8 @@ import RedirectIfAuthenticated from "./components/routes/RedirectIfAuthenticated
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AdminDashboard from "./components/admin/AdminDashboard";
 
+import UpdatePassword from "./components/profile/Password";
+
 function App() {
   return (
     <>
@@ -21,7 +23,7 @@ function App() {
       </ProtectedRoute>
 
       <Routes>
-        {/* Public route (redirects if already logged in) */}
+       
         <Route
           path="/auth"
           element={
@@ -31,7 +33,7 @@ function App() {
           }
         />
 
-        {/* Farmer-only route */}
+     
         <Route
           path="/"
           element={
@@ -41,7 +43,7 @@ function App() {
           }
         />
 
-        {/* Shared route: farmer & agronomist */}
+        
         <Route
           path="/search"
           element={
@@ -51,17 +53,17 @@ function App() {
           }
         />
 
-        {/* Farmer-only */}
+       
         <Route
           path="/profile"
           element={
-            <ProtectedRoute roles={["farmer"]}>
+            <ProtectedRoute roles={["farmer", "agronomist"]}>
               <Profile />
             </ProtectedRoute>
           }
         />
 
-        {/* Agronomist-only */}
+      
         <Route
           path="/add-alert"
           element={
@@ -70,8 +72,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+         <Route
+          path="/password"
+          element={
+            <ProtectedRoute roles={["agronomist", "farmer"]}>
+              <UpdatePassword />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Admin-only */}
+ 
         <Route
           path="/dashboard"
           element={
@@ -81,7 +91,7 @@ function App() {
           }
         />
 
-        {/* Catch-all */}
+     
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

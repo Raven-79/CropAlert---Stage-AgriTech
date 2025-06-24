@@ -80,7 +80,7 @@ export default function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/change-password" className="cursor-pointer">
+                      <Link to="/password" className="cursor-pointer">
                         <Key className="mr-2 h-4 w-4" />
                         Change Password
                       </Link>
