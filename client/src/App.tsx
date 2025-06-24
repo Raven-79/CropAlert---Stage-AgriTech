@@ -9,7 +9,7 @@ import NotFound from "./components/NotFound";
 import AddAlert from "./components/alerts/AddAlert";
 import RedirectIfAuthenticated from "./components/routes/RedirectIfAuthenticated";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
-import Dashboard from "./components/admin/dashboard";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
   return (
@@ -76,7 +76,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute roles={["admin"]}>
-              <Dashboard />
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />

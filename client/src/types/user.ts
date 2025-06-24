@@ -10,6 +10,7 @@ export type User = {
     latitude: number;
     longitude: number;
   };
+  is_approved?: boolean;
 };
 
 export type ResgisterUser = Omit<User, "id"> & {
@@ -21,3 +22,9 @@ export type LoginUser = {
   email: string;
   password: string;
 };
+
+export interface UserFilters {
+  searchQuery: string;
+  roleFilter: 'all' | 'agronomist' | 'farmer';
+  approvalFilter: 'all' | 'approved' | 'pending';
+}

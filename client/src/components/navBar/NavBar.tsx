@@ -71,19 +71,22 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Edit Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/change-password" className="cursor-pointer">
-                    <Key className="mr-2 h-4 w-4" />
-                    Change Password
-                  </Link>
-                </DropdownMenuItem>
-
+                {(user?.role === "farmer" || user?.role === "agronomist") && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Edit Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/change-password" className="cursor-pointer">
+                        <Key className="mr-2 h-4 w-4" />
+                        Change Password
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
@@ -115,13 +118,15 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <MobileNavLink to="/">my Alerts</MobileNavLink>
-            <MobileNavLink to="/search">Find Alert</MobileNavLink>
-            <MobileNavLink to="/profile">Edit Profile</MobileNavLink>
-            <MobileNavLink to="/change-password">Change Password</MobileNavLink>
-            <MobileNavLink to="/dashboard">Dashboard</MobileNavLink>
+            {/* <MobileNavLink to="/dashboard">Dashboard</MobileNavLink> */}
             {(user?.role === "farmer" || user?.role === "agronomist") && (
               <>
+                <MobileNavLink to="/">my Alerts</MobileNavLink>
+                <MobileNavLink to="/search">Find Alert</MobileNavLink>
+                <MobileNavLink to="/profile">Edit Profile</MobileNavLink>
+                <MobileNavLink to="/change-password">
+                  Change Password
+                </MobileNavLink>
                 <MobileNavLink to="/">My Alerts</MobileNavLink>
                 <MobileNavLink to="/search">Find Alert</MobileNavLink>
               </>

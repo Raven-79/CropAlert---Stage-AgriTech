@@ -11,7 +11,7 @@ from geoalchemy2.elements import WKTElement
 from marshmallow import ValidationError
 from app.schemas.alert import AlertSchema, CreateAlertSchema, UpdateAlertSchema
 
-alert_bp = Blueprint('alert', __name__, url_prefix='/alert')
+alert_bp = Blueprint('alert', __name__, url_prefix='/api/alert')
 
 alert_schema = AlertSchema()
 alerts_schema = AlertSchema(many=True)

@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 
 
 
-admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
 @admin_bp.route('/users', methods=['GET'])
 @role_required('admin')
@@ -72,3 +72,30 @@ def decline_user(user_id):
     db.session.commit()
     return jsonify({'message': 'User declined successfully'}), 200
 
+
+@admin_bp.route('/search-agronomist', methods=['GET'])
+@role_required('admin')
+@jwt_required()
+def search_agronomists():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify({'error': 'No search query provided'}), 400
+
+    agronomists = User.query.filter(
+        (User.first_name.ilike(f'%{query}%')) | 
+        (User.last_name.ilike(f'%{query}%')),
+        User.role == 'agronomist'
+    ).all()
+
+    agronomist_list = []
+    for agronomist in agronomists:
+        agronomist_list.append({
+            'id': agronomist.id,
+            'email': agronomist.email,
+            'first_name': agronomist.first_name,
+            'last_name': agronomist.last_name,
+            'role': agronomist.role,
+            'is_approved': agronomist.is_approved
+        })
+
+    return jsonify(agronomist_list), 200

@@ -19,6 +19,8 @@ def get_current_user_or_404():
 @jwt_required()
 def get_profile():
     user = get_current_user_or_404()
+    if user.role == 'admin':
+        return jsonify({'error': 'Admin profile cannot be accessed'}), 403
     if not user.is_approved:
         return jsonify({'error': 'User is not approved'}), 403
 
@@ -31,7 +33,8 @@ def get_profile():
 @jwt_required(locations="cookies")
 def update_profile():
     user = get_current_user_or_404()
-
+    if user.role == 'admin':
+        return jsonify({'error': 'Admin profile cannot be updated'}), 403
     json_data = request.get_json()
     if not json_data:
         return jsonify({'error': 'No input data provided'}), 400
@@ -88,3 +91,20 @@ def update_password():
 
     return jsonify({'message': 'Password updated successfully'}), 200
 
+@user_bp.route('/search', methods=['GET'])
+@role_required('admin')
+@jwt_required()
+def search_users():
+    query = request.args.get('query', '')
+    if not query:
+        return jsonify({'error': 'No search query provided'}), 400
+
+    users = User.query.filter(
+        (User.first_name.ilike(f'%{query}%')) | 
+        (User.last_name.ilike(f'%{query}%'))
+    ).all()
+
+    user_schema = UserSchema(many=True)
+    user_data = user_schema.dump(users)
+
+    return jsonify(user_data), 200
